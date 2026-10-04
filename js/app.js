@@ -138,6 +138,24 @@
         requestAnimationFrame(renderLoop);
     }
 
+    function getCategoryEmoji(part) {
+        if (part.id === 'brain') return '🧠';
+        if (part.id === 'eye') return '👁️';
+        if (part.id === 'trachea') return '🫁';
+        if (part.id === 'heart' || part.id === 'aorta') return '❤️';
+        if (part.id === 'lungs') return '🫁';
+        if (part.id === 'liver') return '🥩';
+        if (part.id === 'stomach') return '🥣';
+        if (part.id === 'pancreas') return '🥞';
+        if (part.id === 'spleen') return '🩸';
+        if (part.id.includes('kidney')) return '🫘';
+        if (part.id === 'intestines') return '🌭';
+        if (part.id === 'bladder') return '💧';
+        if (part.category === 'skeletal') return '🦴';
+        if (part.category === 'muscular') return '💪';
+        return '🔬';
+    }
+
     /**
      * Render Left Gallery Organ Cards (Finale Stage Catalog)
      */
@@ -159,11 +177,12 @@
 
             card.innerHTML = `
                 <div class="card-thumb-wrap">
-                    <img src="assets/images/${part.image}" alt="${part.name}">
+                    <span class="card-emoji-bg">${getCategoryEmoji(part)}</span>
+                    <img src="assets/images/${part.image}" alt="" onerror="this.style.display='none'">
                 </div>
                 <div class="card-details">
-                    <div class="card-name" title="${part.name}">${part.name}</div>
-                    <div class="card-latin" title="${part.latin}">${part.latin}</div>
+                    <div class="card-name">${part.name}</div>
+                    <div class="card-latin">${part.latin}</div>
                     <div class="card-footer">
                         <span class="card-sys-tag">${part.system}</span>
                         <span class="card-inspect-arrow">TAHLIL →</span>
@@ -230,7 +249,8 @@
 
             const img = document.createElement('img');
             img.src = `assets/images/${part.image}`;
-            img.alt = part.name;
+            img.alt = ""; // CRITICAL: NEVER display alt text in 3D scene to prevent broken image text
+            img.onerror = function() { this.style.display = 'none'; };
             el.appendChild(img);
 
             // Click listener
@@ -320,14 +340,14 @@
         stageName.textContent = currentStage.name;
         stageSubtext.textContent = currentStage.sub;
 
-        // Stage 4 Finale Body Shift: Body shifts to right side (p > 70)
+        // Stage 4 Finale Body Shift: Body shifts to right side (p > 72)
         let bodyShiftX = 0;
         let bodyScale = 1.0;
         let galleryAlpha = 0;
 
-        if (p > 70) {
-            const shiftProgress = Math.min(1, (p - 70) / 28);
-            bodyShiftX = shiftProgress * 230; // shift 230px right
+        if (p > 72) {
+            const shiftProgress = Math.min(1, (p - 72) / 28);
+            bodyShiftX = shiftProgress * 240; // shift 240px right
             bodyScale = 1.0 - (shiftProgress * 0.16); // scale to 84%
             galleryAlpha = shiftProgress;
             if (explodedOrgansGallery) {
@@ -343,50 +363,63 @@
 
         applyRigTransform(bodyShiftX, bodyScale);
 
-        // 1. Stage 1 (0 to 22%): Skin Halves Lateral Separation (Clean Peeling)
-        const skinOpen = Math.min(1, p / 22);
-        const skinShiftX = skinOpen * 170 * dispersionMultiplier;
-        const skinRotY = skinOpen * 32;
-        const skinOpacity = Math.max(0, 1 - (p / 26));
+        // 1. Stage 1 (0 to 25%): Skin Halves Lateral Separation (Clean Peeling)
+        // At 0%: 100% intact realistic skin. As p increases to 25%, skin glides laterally open.
+        let skinOpen = 0;
+        let skinOpacity = 1;
+        let muscleBaseOpacity = 0;
+
+        if (p <= 25) {
+            skinOpen = p / 25;
+            skinOpacity = Math.max(0, 1 - (p / 28));
+            muscleBaseOpacity = p / 25; // Revealed directly beneath peeling skin
+        } else {
+            skinOpen = 1;
+            skinOpacity = 0;
+            muscleBaseOpacity = Math.max(0.1, 1 - (p - 25) / 35);
+        }
+
+        const skinShiftX = skinOpen * 180 * dispersionMultiplier;
+        const skinRotY = skinOpen * 35;
 
         skinLeft.style.transform = `translateX(-${skinShiftX}px) rotateY(-${skinRotY}deg) translateZ(${skinOpen * 30}px)`;
         skinRight.style.transform = `translateX(${skinShiftX}px) rotateY(${skinRotY}deg) translateZ(${skinOpen * 30}px)`;
         layerSkin.style.opacity = skinOpacity;
 
-        // 2. Stage 2 (22% to 50%): Muscle Layer Opacity & Separation
+        // Base Muscle Layer
+        layerMuscles.style.opacity = muscleBaseOpacity;
+
+        // Skeletal Layer: Only starts appearing after p > 30% inside the separated muscles!
+        let skelOpacity = 0;
+        if (p > 30 && p <= 75) {
+            skelOpacity = (p - 30) / 25;
+        } else if (p > 75) {
+            skelOpacity = 0.8;
+        }
+        layerSkeleton.style.opacity = Math.min(1, skelOpacity);
+        layerSkeleton.style.transform = `translateZ(-50px)`;
+
+        // Full-body internal organs and circulatory: keep hidden to prevent conflicting ghosts!
+        layerOrgans.style.opacity = 0;
+        layerCirculatory.style.opacity = 0;
+
+        // 2. Stage 2 (25% to 50%): Muscle Parts Separation
         let muscleSep = 0;
-        let muscleOpacity = 1;
-        if (p > 22 && p <= 50) {
-            muscleSep = (p - 22) / 28;
-            muscleOpacity = 1;
+        if (p > 25 && p <= 50) {
+            muscleSep = (p - 25) / 25;
         } else if (p > 50) {
-            muscleSep = 1;
-            // Dim muscles when looking at deep viscera
-            muscleOpacity = Math.max(0.2, 1 - (p - 50) / 45);
+            muscleSep = 1.0;
         }
-        layerMuscles.style.opacity = muscleOpacity;
 
-        // 3. Stage 3 (50% to 75%): Skeleton Layer Elevation & Visceral Organs
+        // 3. Stage 3 (50% to 75%): Visceral Organs Emerge Forward
         let visceraSep = 0;
-        if (p > 48) {
-            visceraSep = Math.min(1, (p - 48) / 30);
+        if (p > 50 && p <= 75) {
+            visceraSep = (p - 50) / 25;
+        } else if (p > 75) {
+            visceraSep = 1.0;
         }
 
-        const skelZ = visceraSep * -90 * dispersionMultiplier;
-        layerSkeleton.style.transform = `translateZ(${skelZ}px)`;
-        layerSkeleton.style.opacity = p > 25 ? Math.min(1, (p - 25) / 25) : 0;
-
-        // Visceral Organs (Lungs, Heart, Liver, Stomach, Kidneys) slide forward
-        const organsZ = visceraSep * 130 * dispersionMultiplier;
-        layerOrgans.style.transform = `translateZ(${organsZ}px)`;
-        layerOrgans.style.opacity = p > 35 ? Math.min(1, (p - 35) / 20) : 0;
-
-        // Circulatory & Nervous tree
-        const circZ = visceraSep * 170 * dispersionMultiplier;
-        layerCirculatory.style.transform = `translateZ(${circZ}px)`;
-        layerCirculatory.style.opacity = p > 55 ? Math.min(1, (p - 55) / 30) : 0;
-
-        // 4. Explode Segmented Parts & Draw Laser Guide Cables
+        // 4. Update Each Segmented Part
         let svgLinesHtml = '';
         const baseW = 800;
         const baseH = 1400;
@@ -402,22 +435,42 @@
             const isVisible = isSystemMatch && isRegionMatch;
 
             if (!isVisible) {
-                partEl.style.opacity = '0.05';
+                partEl.style.opacity = '0';
                 partEl.style.pointerEvents = 'none';
                 if (labelEl) labelEl.style.display = 'none';
                 return;
-            } else {
-                partEl.style.opacity = '1';
-                partEl.style.pointerEvents = 'auto';
             }
 
-            // Determine part separation based on category and progress
+            // Determine part visibility & separation
             let partSep = 0;
+            let partOpacity = 0;
+
             if (part.category === 'muscular') {
-                partSep = muscleSep;
-            } else if (part.category === 'skeletal' || part.category === 'organs') {
-                partSep = visceraSep;
+                if (p > 25) {
+                    partSep = muscleSep;
+                    // Muscles separate and stay visible, slightly dimming when deep organs emerge
+                    partOpacity = p > 55 ? 0.35 : Math.min(1, (p - 25) / 10);
+                } else {
+                    partOpacity = 0;
+                }
+            } else if (part.category === 'skeletal') {
+                if (p > 35) {
+                    partSep = Math.min(1, (p - 35) / 30);
+                    partOpacity = Math.min(1, (p - 35) / 15);
+                } else {
+                    partOpacity = 0;
+                }
+            } else if (part.category === 'organs') {
+                if (p > 50) {
+                    partSep = visceraSep;
+                    partOpacity = Math.min(1, (p - 50) / 12);
+                } else {
+                    partOpacity = 0;
+                }
             }
+
+            partEl.style.opacity = partOpacity;
+            partEl.style.pointerEvents = partOpacity > 0.5 ? 'auto' : 'none';
 
             const curDx = part.dx * partSep * dispersionMultiplier;
             const curDy = part.dy * partSep * dispersionMultiplier;
@@ -425,31 +478,36 @@
 
             partEl.style.transform = `translate3d(${curDx}px, ${curDy}px, ${curDz}px)`;
 
-            // Position Floating Labels cleanly
+            // Floating Label Badges on Body:
+            // Only show during Stages 2 and 3 (p: 28% to 72%).
+            // At Stage 4 (p > 72%), hide labels on body so the body is pristine, and left gallery displays everything!
             if (labelEl) {
-                const originX = part.cx;
-                const originY = part.cy;
-                const explodedX = originX + curDx;
-                const explodedY = originY + curDy;
+                const showLabel = p > 28 && p < 72 && partOpacity > 0.6 && isVisible;
 
-                const labelPosX = (explodedX / baseW) * 100;
-                const labelPosY = ((explodedY + (part.h / 2) + 20) / baseH) * 100;
+                if (showLabel) {
+                    const originX = part.cx;
+                    const originY = part.cy;
+                    const explodedX = originX + curDx;
+                    const explodedY = originY + curDy;
 
-                labelEl.style.left = `${labelPosX}%`;
-                labelEl.style.top = `${labelPosY}%`;
+                    const labelPosX = (explodedX / baseW) * 100;
+                    const labelPosY = ((explodedY + (part.h / 2) + 20) / baseH) * 100;
 
-                // Display labels cleanly when separated (hide when at finale stage to let left gallery shine)
-                const showLabel = p > 22 && p < 75 && partSep > 0.25 && isVisible;
-                labelEl.style.display = showLabel ? 'block' : 'none';
-                labelEl.style.opacity = showLabel ? Math.min(1, (partSep - 0.25) / 0.3) : 0;
+                    labelEl.style.left = `${labelPosX}%`;
+                    labelEl.style.top = `${labelPosY}%`;
+                    labelEl.style.display = 'block';
+                    labelEl.style.opacity = '1';
 
-                // Connecting laser cable lines
-                if (showLabel && (Math.abs(curDx) > 8 || Math.abs(curDy) > 8)) {
-                    svgLinesHtml += `
-                        <line x1="${originX}" y1="${originY}" x2="${explodedX}" y2="${explodedY}" class="cable-line" />
-                        <circle cx="${originX}" cy="${originY}" r="3.5" class="cable-point" />
-                        <circle cx="${explodedX}" cy="${explodedY}" r="3.5" class="cable-point" />
-                    `;
+                    // Laser connecting cable line
+                    if (Math.abs(curDx) > 8 || Math.abs(curDy) > 8) {
+                        svgLinesHtml += `
+                            <line x1="${originX}" y1="${originY}" x2="${explodedX}" y2="${explodedY}" class="cable-line" />
+                            <circle cx="${originX}" cy="${originY}" r="3.5" class="cable-point" />
+                            <circle cx="${explodedX}" cy="${explodedY}" r="3.5" class="cable-point" />
+                        `;
+                    }
+                } else {
+                    labelEl.style.display = 'none';
                 }
             }
         });
