@@ -60,7 +60,26 @@
     let activeSystem = 'all';
     let activeRegion = 'all';
     let selectedItemId = null;
-    let zoomLevel = typeof window !== 'undefined' && window.innerWidth < 1500 ? 0.88 : 0.95;
+    function getOptimalZoom() {
+        if (typeof window === 'undefined') return 1.0;
+        const w = window.innerWidth;
+        if (w < 480) {
+            // Small phones (iPhone SE, compact Android)
+            return Math.min(0.48, (w - 20) / 580);
+        } else if (w < 768) {
+            // Standard iPhone, Samsung Galaxy, Pixel
+            return Math.min(0.56, (w - 30) / 560);
+        } else if (w < 1024) {
+            // Tablets & iPads
+            return 0.72;
+        } else if (w < 1500) {
+            return 0.88;
+        }
+        return 0.95;
+    }
+
+    let zoomLevel = getOptimalZoom();
+    let userHasZoomed = false;
     let camRotateX = 0;
     let camRotateY = 0;
     let xrayActive = false;
@@ -88,6 +107,7 @@
     const partsContainer = document.getElementById('partsContainer');
     const labelsContainer = document.getElementById('labelsContainer');
     const hologramSvg = document.getElementById('hologramSvg');
+    const sidebarLeft = document.getElementById('sidebarLeft');
     const sidebarRight = document.getElementById('sidebarRight');
     const inspectorContent = document.getElementById('inspectorContent');
     const searchInput = document.getElementById('searchInput');
@@ -113,6 +133,11 @@
     const explodedOrgansGallery = document.getElementById('explodedOrgansGallery');
     const galleryCardsGrid = document.getElementById('galleryCardsGrid');
     const galleryFilterChips = document.getElementById('galleryFilterChips');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeSidebarLeftBtn = document.getElementById('closeSidebarLeftBtn');
+    const mobileGalleryToggleBtn = document.getElementById('mobileGalleryToggleBtn');
+    const closeGalleryBtn = document.getElementById('closeGalleryBtn');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
     let currentGalleryFilter = 'all';
 
     // --- STAGE DEFINITIONS ---
@@ -344,24 +369,40 @@
         stageName.textContent = currentStage.name;
         stageSubtext.textContent = currentStage.sub;
 
-        // Stage 4 Finale Body Shift: Body shifts to right side (p > 72)
+        // Stage 4 Finale Body Shift: Body shifts to right side on desktop (p > 72)
         let bodyShiftX = 0;
         let bodyScale = 1.0;
         let galleryAlpha = 0;
+        const isMobileScreen = typeof window !== 'undefined' && window.innerWidth <= 768;
 
         if (p > 72) {
             const shiftProgress = Math.min(1, (p - 72) / 28);
-            bodyShiftX = shiftProgress * 290; // shift 290px right
-            bodyScale = 1.0 - (shiftProgress * 0.20); // scale to 80% for spacious fit
+            bodyShiftX = isMobileScreen ? 0 : (shiftProgress * 290); // On mobile phones, body stays centered!
+            bodyScale = 1.0 - (shiftProgress * (isMobileScreen ? 0.08 : 0.20));
             galleryAlpha = shiftProgress;
-            if (explodedOrgansGallery) {
-                explodedOrgansGallery.classList.add('active');
-                explodedOrgansGallery.style.opacity = galleryAlpha;
+
+            if (!isMobileScreen) {
+                if (explodedOrgansGallery) {
+                    explodedOrgansGallery.classList.add('active');
+                    explodedOrgansGallery.style.opacity = galleryAlpha;
+                }
+                if (mobileGalleryToggleBtn) mobileGalleryToggleBtn.style.display = 'none';
+            } else {
+                if (mobileGalleryToggleBtn) {
+                    mobileGalleryToggleBtn.style.display = 'inline-flex';
+                    mobileGalleryToggleBtn.style.opacity = galleryAlpha;
+                }
             }
         } else {
             if (explodedOrgansGallery) {
                 explodedOrgansGallery.classList.remove('active');
-                explodedOrgansGallery.style.opacity = 0;
+                if (!explodedOrgansGallery.classList.contains('mobile-open')) {
+                    explodedOrgansGallery.style.opacity = 0;
+                }
+            }
+            if (mobileGalleryToggleBtn) {
+                mobileGalleryToggleBtn.style.display = 'none';
+                mobileGalleryToggleBtn.style.opacity = 0;
             }
         }
 
@@ -563,6 +604,11 @@
 
         // Render Inspector Dossier
         sidebarRight.classList.remove('collapsed');
+        if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+            if (drawerBackdrop) drawerBackdrop.classList.add('active');
+            if (explodedOrgansGallery) explodedOrgansGallery.classList.remove('mobile-open');
+            if (sidebarLeft) sidebarLeft.classList.remove('open');
+        }
         inspectorContent.innerHTML = `
             <div class="organ-preview-box">
                 <div class="organ-grid"></div>
@@ -763,6 +809,126 @@
 
         stageCenter.addEventListener('contextmenu', (e) => e.preventDefault());
 
+        // --- Touch Gesture Support for Mobile (Android & iOS) ---
+        let isTouching = false;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let initialPinchDist = 0;
+        let initialZoom = zoomLevel;
+
+        // Initialize audio on first user touch (iOS policy)
+        document.addEventListener('touchstart', () => {
+            if (window.medicalAudio) window.medicalAudio.init();
+        }, { once: true });
+
+        stageCenter.addEventListener('touchstart', (e) => {
+            if (window.medicalAudio) window.medicalAudio.init();
+
+            if (e.touches.length === 1) {
+                isTouching = true;
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            } else if (e.touches.length === 2) {
+                isTouching = false;
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                initialPinchDist = Math.hypot(dx, dy);
+                initialZoom = zoomLevel;
+            }
+        }, { passive: true });
+
+        stageCenter.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1 && isTouching) {
+                const deltaX = e.touches[0].clientX - touchStartX;
+                const deltaY = e.touches[0].clientY - touchStartY;
+
+                camRotateY += deltaX * 0.45;
+                camRotateX -= deltaY * 0.45;
+                camRotateX = Math.max(-65, Math.min(65, camRotateX));
+
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                applyRigTransform();
+            } else if (e.touches.length === 2 && initialPinchDist > 0) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const currentDist = Math.hypot(dx, dy);
+                const scaleFactor = currentDist / initialPinchDist;
+                zoomLevel = Math.max(0.35, Math.min(2.5, initialZoom * scaleFactor));
+                userHasZoomed = true;
+                applyRigTransform();
+            }
+        }, { passive: true });
+
+        stageCenter.addEventListener('touchend', (e) => {
+            if (e.touches.length === 0) {
+                isTouching = false;
+                initialPinchDist = 0;
+            } else if (e.touches.length === 1) {
+                isTouching = true;
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                initialPinchDist = 0;
+            }
+        }, { passive: true });
+
+        // --- Mobile Drawer Controls ---
+        function closeAllMobileDrawers() {
+            if (sidebarLeft) sidebarLeft.classList.remove('open');
+            if (sidebarRight) sidebarRight.classList.add('collapsed');
+            if (explodedOrgansGallery) explodedOrgansGallery.classList.remove('mobile-open');
+            if (drawerBackdrop) drawerBackdrop.classList.remove('active');
+        }
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebarLeft.classList.toggle('open');
+                const isOpen = sidebarLeft.classList.contains('open');
+                if (drawerBackdrop) drawerBackdrop.classList.toggle('active', isOpen);
+                if (isOpen) {
+                    sidebarRight.classList.add('collapsed');
+                    if (explodedOrgansGallery) explodedOrgansGallery.classList.remove('mobile-open');
+                }
+                window.medicalAudio.playClick();
+            });
+        }
+
+        if (closeSidebarLeftBtn) {
+            closeSidebarLeftBtn.addEventListener('click', () => {
+                sidebarLeft.classList.remove('open');
+                if (drawerBackdrop) drawerBackdrop.classList.remove('active');
+                window.medicalAudio.playClick();
+            });
+        }
+
+        if (mobileGalleryToggleBtn) {
+            mobileGalleryToggleBtn.addEventListener('click', () => {
+                explodedOrgansGallery.classList.toggle('mobile-open');
+                const isOpen = explodedOrgansGallery.classList.contains('mobile-open');
+                if (drawerBackdrop) drawerBackdrop.classList.toggle('active', isOpen);
+                if (isOpen) {
+                    sidebarLeft.classList.remove('open');
+                    sidebarRight.classList.add('collapsed');
+                }
+                window.medicalAudio.playClick();
+            });
+        }
+
+        if (closeGalleryBtn) {
+            closeGalleryBtn.addEventListener('click', () => {
+                explodedOrgansGallery.classList.remove('mobile-open');
+                if (drawerBackdrop) drawerBackdrop.classList.remove('active');
+                window.medicalAudio.playClick();
+            });
+        }
+
+        if (drawerBackdrop) {
+            drawerBackdrop.addEventListener('click', () => {
+                closeAllMobileDrawers();
+                window.medicalAudio.playClick();
+            });
+        }
+
         // Viewport Mouse Move for continuous scrubbing & tool interactions
         window.addEventListener('mousemove', (e) => {
             // Free orbit rotation
@@ -903,6 +1069,9 @@
                 activeSystem = btn.dataset.system;
                 updateDissectionStage(explodeProgress);
                 updateVisibleCount();
+                if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+                    closeAllMobileDrawers();
+                }
                 window.medicalAudio.playClick();
             });
         });
@@ -936,19 +1105,22 @@
 
         // Zoom & Reset buttons
         document.getElementById('zoomInBtn').addEventListener('click', () => {
-            zoomLevel = Math.min(2.0, zoomLevel + 0.15);
+            zoomLevel = Math.min(2.4, zoomLevel + 0.15);
+            userHasZoomed = true;
             applyRigTransform();
             window.medicalAudio.playClick();
         });
 
         document.getElementById('zoomOutBtn').addEventListener('click', () => {
-            zoomLevel = Math.max(0.6, zoomLevel - 0.15);
+            zoomLevel = Math.max(0.32, zoomLevel - 0.15);
+            userHasZoomed = true;
             applyRigTransform();
             window.medicalAudio.playClick();
         });
 
         document.getElementById('resetCamBtn').addEventListener('click', () => {
-            zoomLevel = 1.0;
+            zoomLevel = getOptimalZoom();
+            userHasZoomed = false;
             camRotateX = 0;
             camRotateY = 0;
             applyRigTransform();
@@ -967,6 +1139,7 @@
         // Close Inspector
         document.getElementById('closeInspectorBtn').addEventListener('click', () => {
             sidebarRight.classList.add('collapsed');
+            if (drawerBackdrop) drawerBackdrop.classList.remove('active');
             window.medicalAudio.stopHeartbeat();
             window.medicalAudio.playClick();
         });
@@ -1000,6 +1173,23 @@
             if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                 searchResults.classList.remove('active');
             }
+        });
+
+        // Dynamic Resize and Orientation Adaptation
+        window.addEventListener('resize', () => {
+            if (!userHasZoomed) {
+                zoomLevel = getOptimalZoom();
+            }
+            updateDissectionStage(explodeProgress);
+        });
+
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                if (!userHasZoomed) {
+                    zoomLevel = getOptimalZoom();
+                }
+                updateDissectionStage(explodeProgress);
+            }, 250);
         });
     }
 

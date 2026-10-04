@@ -59,9 +59,18 @@ html, body {
     position: relative;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
     display: flex;
     flex-direction: column;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
     background: 
         radial-gradient(circle at 50% 40%, rgba(0, 140, 255, 0.08) 0%, transparent 60%),
         radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 40%),
@@ -757,6 +766,14 @@ html, body {
     align-items: center;
     justify-content: center;
     perspective: 1400px;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: grab;
+}
+
+.stage-center:active {
+    cursor: grabbing;
 }
 
 /* 3D Transform Origin Rig */
@@ -1485,7 +1502,66 @@ html, body {
     cursor: pointer;
 }
 
-/* Responsive Rules */
+/* ==========================================================================
+   MOBILE BACKDROP & FLOATING CONTROLS
+   ========================================================================== */
+.mobile-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 6, 14, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 85;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-drawer-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mobile-menu-btn {
+    display: none;
+}
+
+.mobile-close-left, .mobile-close-gallery {
+    display: none;
+}
+
+.mobile-gallery-toggle-btn {
+    display: none;
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 46;
+    padding: 10px 22px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, rgba(14, 24, 44, 0.95), rgba(8, 14, 26, 0.98));
+    border: 1.5px solid var(--primary-cyan);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 20px var(--primary-cyan-glow);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation: mobilePillPulse 2s infinite alternate;
+}
+
+@keyframes mobilePillPulse {
+    0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 12px var(--primary-cyan-glow); }
+    100% { transform: translateX(-50%) scale(1.05); box-shadow: 0 0 24px var(--primary-cyan-glow), 0 0 40px rgba(0, 240, 255, 0.3); }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (TABLETS, ANDROID & IPHONE / IOS)
+   ========================================================================== */
 @media (max-width: 1024px) {
     .sidebar-left {
         width: 240px;
@@ -1493,23 +1569,364 @@ html, body {
     .sidebar-right {
         width: 300px;
     }
+    .vitals-telemetry-strip {
+        gap: 10px;
+        padding: 4px 10px;
+    }
+    .search-wrapper {
+        width: 220px;
+    }
 }
 
 @media (max-width: 768px) {
-    .sidebar-left, .sidebar-right {
-        position: absolute;
+    /* Header optimization */
+    .header-bar {
+        height: 52px;
+        padding: 0 10px;
+        gap: 8px;
+    }
+
+    .brand-section {
+        gap: 8px;
+    }
+
+    .brand-logo-badge {
+        width: 32px;
+        height: 32px;
+    }
+
+    .brand-logo-badge svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .brand-title-wrap h1 {
+        font-size: 13px;
+        letter-spacing: 0.5px;
+    }
+
+    .brand-title-wrap h1 .version {
+        display: none;
+    }
+
+    .brand-title-wrap p {
+        display: none;
+    }
+
+    .vitals-telemetry-strip {
+        display: none;
+    }
+
+    .telemetry-ecg {
+        padding: 3px 6px;
+        gap: 6px;
+    }
+
+    .ecg-canvas {
+        width: 44px;
+        height: 20px;
+    }
+
+    .ecg-bpm {
+        font-size: 11px;
+    }
+
+    .ecg-label {
+        font-size: 7.5px;
+    }
+
+    .search-wrapper {
+        width: 110px;
+        flex: 1;
+        max-width: 150px;
+    }
+
+    .search-input-box {
+        height: 32px;
+        font-size: 11px;
+        padding: 0 8px 0 28px;
+    }
+
+    .search-icon {
+        left: 8px;
+        width: 12px;
+        height: 12px;
+    }
+
+    .header-actions {
+        gap: 4px;
+    }
+
+    /* Hide desktop-only buttons from header */
+    .header-actions #mouseTrackBtn,
+    .header-actions #stethoscopeBtn,
+    .header-actions #slicePlaneBtn,
+    .header-actions #xrayBtn {
+        display: none;
+    }
+
+    .header-actions #soundToggleBtn {
+        height: 32px;
+        padding: 0 8px;
+        font-size: 10px;
+        gap: 4px;
+    }
+
+    .header-actions #soundToggleBtn span {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: inline-flex !important;
+        height: 32px;
+        padding: 0 10px;
+        font-size: 11px;
+        background: rgba(0, 240, 255, 0.15);
+        border: 1px solid var(--primary-cyan);
+        color: #fff;
+    }
+
+    /* Left Sidebar: Off-canvas Mobile Drawer */
+    .sidebar-left {
+        position: fixed;
+        left: 0;
         top: 0;
         bottom: 0;
-        z-index: 60;
-    }
-    .sidebar-left {
-        left: 0;
+        width: 310px;
+        max-width: 86vw;
+        z-index: 100;
         transform: translateX(-100%);
+        box-shadow: 12px 0 40px rgba(0, 0, 0, 0.9);
+        transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
+
     .sidebar-left.open {
         transform: translateX(0);
     }
+
+    .mobile-close-left {
+        display: flex !important;
+    }
+
+    /* Right Sidebar: Mobile Bottom Sheet */
+    .sidebar-right {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto;
+        width: 100%;
+        height: 76vh;
+        max-height: 85vh;
+        border-radius: 22px 22px 0 0;
+        z-index: 100;
+        border-left: none;
+        border-top: 1.5px solid var(--primary-cyan);
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 240, 255, 0.2);
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .sidebar-right:not(.collapsed) {
+        transform: translateY(0);
+    }
+
+    .sidebar-right::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 44px;
+        height: 4px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.3);
+        z-index: 10;
+    }
+
+    .inspector-header {
+        padding: 16px 20px 12px;
+    }
+
+    .inspector-content {
+        padding: 14px 18px 24px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Stage 4 Gallery as Full Mobile Bottom Sheet */
+    .exploded-organs-gallery {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto;
+        width: 100%;
+        max-width: 100%;
+        height: 76vh;
+        border-radius: 22px 22px 0 0;
+        z-index: 100;
+        border: 1.5px solid var(--primary-cyan);
+        transform: translateY(100%);
+        opacity: 1 !important;
+        pointer-events: none;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 240, 255, 0.2);
+        transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .exploded-organs-gallery.mobile-open {
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .mobile-close-gallery {
+        display: flex !important;
+        position: absolute;
+        right: 14px;
+        top: 14px;
+    }
+
+    /* Floating Badges & Labels on Mobile */
+    .stage-level-badge {
+        top: 10px;
+        left: 10px;
+        padding: 6px 10px;
+        gap: 8px;
+    }
+
+    .stage-level-title {
+        font-size: 9px;
+        letter-spacing: 0.5px;
+    }
+
+    .stage-level-desc {
+        display: none;
+    }
+
+    .stage-quick-controls {
+        top: 10px;
+        right: 10px;
+        gap: 6px;
+    }
+
+    .stage-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+    }
+
+    .stage-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .hologram-badge {
+        padding: 3px 6px;
+    }
+
+    .hologram-badge .badge-title {
+        font-size: 9.5px;
+    }
+
+    .hologram-badge .badge-latin {
+        font-size: 8px;
+    }
+
+    /* Bottom Controller on Mobile */
+    .master-console {
+        padding: 8px 12px max(10px, env(safe-area-inset-bottom, 10px));
+        background: rgba(8, 13, 24, 0.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    .console-title-wrap h4 {
+        font-size: 11px;
+        gap: 6px;
+    }
+
+    .console-title-wrap h4 svg {
+        width: 13px;
+        height: 13px;
+    }
+
+    .explode-percentage-pill {
+        font-size: 13px;
+        padding: 2px 7px;
+    }
+
+    .console-mode-toggles .hud-btn {
+        height: 28px;
+        padding: 0 8px;
+        font-size: 10px;
+        gap: 4px;
+    }
+
+    .scrubber-track-container {
+        padding: 6px 0;
+    }
+
+    .scrubber-slider {
+        height: 10px;
+    }
+
+    .scrubber-slider::-webkit-slider-thumb {
+        width: 30px;
+        height: 30px;
+    }
+
+    .checkpoints-row {
+        margin-top: 2px;
+        padding: 0 2px;
+    }
+
+    .checkpoint-tick {
+        width: 2px;
+        height: 6px;
+    }
+
+    .checkpoint-node.active-point .checkpoint-tick {
+        height: 10px;
+    }
+
+    .checkpoint-label {
+        font-size: 8px;
+        letter-spacing: 0.2px;
+    }
+
+    .console-bottom-bar {
+        margin-top: 4px;
+    }
+
+    .console-bottom-bar > div:first-child {
+        display: none;
+    }
+
+    .dispersion-slider-wrap {
+        width: 100%;
+        justify-content: space-between;
+        font-size: 10.5px;
+    }
+
+    .mini-range {
+        width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extreme Compact for iPhone SE / Small Android */
+    .brand-title-wrap h1 {
+        font-size: 12px;
+    }
+
     .search-wrapper {
-        width: 180px;
+        display: none;
+    }
+
+    .checkpoint-label {
+        font-size: 7.5px;
+    }
+
+    .stage-level-badge {
+        max-width: calc(100% - 60px);
     }
 }
