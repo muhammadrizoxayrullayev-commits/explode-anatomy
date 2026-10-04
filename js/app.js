@@ -46,6 +46,12 @@
     let camRotateX = 0;
     let camRotateY = 0;
     let xrayActive = false;
+    let stethoscopeActive = false;
+    let slicePlaneActive = false;
+    let currentCameraPreset = 0; // 0: Frontal, 1: Isometric Galaxy, 2: Deep 3D Profile
+    let isDraggingStage = false;
+    let prevMouseX = 0;
+    let prevMouseY = 0;
 
     // DOM Elements Cache
     const explodeSlider = document.getElementById('explodeSlider');
@@ -78,6 +84,13 @@
     const xrayLens = document.getElementById('xrayLens');
     const ecgCanvas = document.getElementById('ecgCanvas');
     const totalVisibleCount = document.getElementById('totalVisibleCount');
+    const stethoscopeBtn = document.getElementById('stethoscopeBtn');
+    const stethoscopeSensor = document.getElementById('stethoscopeSensor');
+    const stethoSoundLabel = document.getElementById('stethoSoundLabel');
+    const slicePlaneBtn = document.getElementById('slicePlaneBtn');
+    const laserSlicePlane = document.getElementById('laserSlicePlane');
+    const sliceLevelText = document.getElementById('sliceLevelText');
+    const angle3dBtn = document.getElementById('angle3dBtn');
 
     // --- STAGE DEFINITIONS ---
     const STAGES = [
@@ -498,8 +511,83 @@
             window.medicalAudio.playClick();
         });
 
-        // Viewport Mouse Move for continuous scrubbing
+        // Stethoscope Mode Toggle
+        stethoscopeBtn.addEventListener('click', () => {
+            stethoscopeActive = !stethoscopeActive;
+            stethoscopeBtn.classList.toggle('active', stethoscopeActive);
+            stethoscopeBtn.querySelector('span').textContent = `Stetoskop: ${stethoscopeActive ? 'ON' : 'OFF'}`;
+            stethoscopeSensor.classList.toggle('active', stethoscopeActive);
+            if (!stethoscopeActive) {
+                window.medicalAudio.stopHeartbeat();
+            }
+            window.medicalAudio.playClick();
+        });
+
+        // CT Laser Slice Plane Toggle
+        slicePlaneBtn.addEventListener('click', () => {
+            slicePlaneActive = !slicePlaneActive;
+            slicePlaneBtn.classList.toggle('active', slicePlaneActive);
+            laserSlicePlane.classList.toggle('active', slicePlaneActive);
+            if (slicePlaneActive) {
+                window.medicalAudio.playScanSweep();
+            }
+            window.medicalAudio.playClick();
+        });
+
+        // 3D Camera Angles Preset Button
+        angle3dBtn.addEventListener('click', () => {
+            currentCameraPreset = (currentCameraPreset + 1) % 3;
+            if (currentCameraPreset === 0) {
+                camRotateX = 0;
+                camRotateY = 0;
+                zoomLevel = 1.0;
+            } else if (currentCameraPreset === 1) {
+                // Isometric Galaxy Explode Angle
+                camRotateX = 18;
+                camRotateY = -28;
+                zoomLevel = 1.1;
+                targetExplode = Math.max(50, targetExplode);
+                explodeSlider.value = targetExplode;
+            } else {
+                // Profile Deep Dissection Angle
+                camRotateX = 8;
+                camRotateY = 42;
+                zoomLevel = 1.15;
+            }
+            applyRigTransform();
+            window.medicalAudio.playClick();
+        });
+
+        // Free 3D Mouse Orbit on Stage (Drag with Right Click or Shift+Click)
+        stageCenter.addEventListener('mousedown', (e) => {
+            if (e.button === 2 || e.shiftKey || e.button === 1) {
+                isDraggingStage = true;
+                prevMouseX = e.clientX;
+                prevMouseY = e.clientY;
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDraggingStage = false;
+        });
+
+        stageCenter.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Viewport Mouse Move for continuous scrubbing & tool interactions
         window.addEventListener('mousemove', (e) => {
+            // Free orbit rotation
+            if (isDraggingStage) {
+                const deltaX = e.clientX - prevMouseX;
+                const deltaY = e.clientY - prevMouseY;
+                camRotateY += deltaX * 0.4;
+                camRotateX -= deltaY * 0.4;
+                prevMouseX = e.clientX;
+                prevMouseY = e.clientY;
+                applyRigTransform();
+                return;
+            }
+
             if (mouseTrackMode) {
                 // Map mouse X across screen to 0 - 100%
                 const pct = (e.clientX / window.innerWidth) * 100;
@@ -508,17 +596,79 @@
                 window.medicalAudio.playScrub(targetExplode / 100);
             }
 
-            // 3D Parallax tilt on rig
-            const normX = (e.clientX / window.innerWidth) - 0.5;
-            const normY = (e.clientY / window.innerHeight) - 0.5;
-            camRotateY = normX * 16;
-            camRotateX = -normY * 12;
-            applyRigTransform();
+            // Subtle 3D Parallax tilt on rig when not orbiting
+            if (!isDraggingStage && currentCameraPreset === 0) {
+                const normX = (e.clientX / window.innerWidth) - 0.5;
+                const normY = (e.clientY / window.innerHeight) - 0.5;
+                camRotateY = normX * 16;
+                camRotateX = -normY * 12;
+                applyRigTransform();
+            }
 
             // X-Ray lens tracking
             if (xrayActive) {
                 xrayLens.style.left = `${e.clientX}px`;
                 xrayLens.style.top = `${e.clientY}px`;
+            }
+
+            // Stethoscope follower and auscultation trigger
+            if (stethoscopeActive) {
+                stethoscopeSensor.style.left = `${e.clientX}px`;
+                stethoscopeSensor.style.top = `${e.clientY}px`;
+
+                // Detect anatomical zone under mouse
+                const stageRect = stageCenter.getBoundingClientRect();
+                const relY = (e.clientY - stageRect.top) / stageRect.height; // 0 to 1
+                const relX = (e.clientX - stageRect.left) / stageRect.width;
+
+                if (relY > 0.22 && relY < 0.36 && relX > 0.42 && relX < 0.58) {
+                    // Heart area
+                    stethoSoundLabel.textContent = "Auskultatsiya: Yurak Ritmi (74 BPM - Lub-Dub)";
+                    stethoSoundLabel.style.borderColor = "#ff3366";
+                    window.medicalAudio.startHeartbeatLoop(74);
+                } else if (relY > 0.20 && relY < 0.38 && (relX < 0.42 || relX > 0.58)) {
+                    // Lungs area
+                    stethoSoundLabel.textContent = "Auskultatsiya: Vezikulyar Nafas (O'pka)";
+                    stethoSoundLabel.style.borderColor = "#00f0ff";
+                    window.medicalAudio.stopHeartbeat();
+                    window.medicalAudio.playBreathing();
+                } else if (relY > 0.12 && relY < 0.22) {
+                    // Neck / Carotid
+                    stethoSoundLabel.textContent = "Auskultatsiya: Uyqu Arteriyasi Pulsi (Karotid)";
+                    stethoSoundLabel.style.borderColor = "#ffd700";
+                    window.medicalAudio.stopHeartbeat();
+                } else if (relY > 0.38 && relY < 0.55) {
+                    // Abdomen
+                    stethoSoundLabel.textContent = "Auskultatsiya: Me'da-ichak Peristaltikasi";
+                    stethoSoundLabel.style.borderColor = "#00ffaa";
+                    window.medicalAudio.stopHeartbeat();
+                } else {
+                    stethoSoundLabel.textContent = "Auskultatsiya: To'qima fon shovqini";
+                    stethoSoundLabel.style.borderColor = "var(--border-color)";
+                    window.medicalAudio.stopHeartbeat();
+                }
+            }
+
+            // CT Slicing Plane tracking
+            if (slicePlaneActive) {
+                const stageRect = stageRig.getBoundingClientRect();
+                const planeRelY = Math.max(0, Math.min(1, (e.clientY - stageRect.top) / stageRect.height));
+                const planePercent = planeRelY * 100;
+                laserSlicePlane.style.top = `${planePercent}%`;
+
+                // Calculate anatomical cross-section label
+                let levelStr = "";
+                const cm = Math.round(planeRelY * 175); // approx 175 cm human height
+                if (planePercent < 15) levelStr = `Kraniofatsial Kesim (Kalla & Bosh Miya) // ${cm} cm`;
+                else if (planePercent < 24) levelStr = `C1-C7 Bo'yin & Halqum Kesimi // ${cm} cm`;
+                else if (planePercent < 42) levelStr = `Th1-Th8 Ko'krak Qafasi (Yurak & O'pka) // ${cm} cm`;
+                else if (planePercent < 56) levelStr = `Th9-L2 Epigastral Kesim (Jigar & Me'da) // ${cm} cm`;
+                else if (planePercent < 68) levelStr = `L3-L5 Bel & Buyraklar Kesimi // ${cm} cm`;
+                else if (planePercent < 78) levelStr = `Pelvis (Tos & Qovuq) Kesimi // ${cm} cm`;
+                else if (planePercent < 90) levelStr = `Femur (Son & Kvadritseps) Kesimi // ${cm} cm`;
+                else levelStr = `Tibia & Fibula (Boldir & Panja) Kesimi // ${cm} cm`;
+
+                sliceLevelText.textContent = levelStr;
             }
         });
 
