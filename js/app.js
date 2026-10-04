@@ -8,59 +8,59 @@
 
     // Expanded Pre-segmented Organ and Muscle Parts (All Viscera, Organs, Bones, Muscles)
     const PARTS_MANIFEST = [
-        // Head & Sensory
-        { "id": "brain", "name": "Bosh miya", "latin": "Encephalon & Cerebrum", "system": "nervous", "region": "head", "category": "organs", "dx": 0, "dy": -200, "dz": 180, "image": "part_brain.png", "w": 160, "h": 150, "x": 320, "y": 50, "cx": 400, "cy": 125 },
-        { "id": "eye", "name": "Ko'z olmasi & ko'rish nervi", "latin": "Bulbus oculi & n. opticus", "system": "nervous", "region": "head", "category": "organs", "dx": 0, "dy": -160, "dz": 160, "image": "part_eye.png", "w": 120, "h": 60, "x": 340, "y": 90, "cx": 400, "cy": 120 },
-        { "id": "head_muscles", "name": "Bosh & yuz muskullari", "latin": "Musculi capitis et faciei", "system": "muscular", "region": "head", "category": "muscular", "dx": 0, "dy": -110, "dz": 90, "image": "part_head_muscles.png", "w": 160, "h": 190, "x": 320, "y": 40, "cx": 400, "cy": 135 },
-        { "id": "skull", "name": "Kalla suyagi (Kranium)", "latin": "Cranium", "system": "skeletal", "region": "head", "category": "skeletal", "dx": 0, "dy": -260, "dz": -100, "image": "part_skull.png", "w": 160, "h": 170, "x": 320, "y": 40, "cx": 400, "cy": 125 },
+        // Head & Sensory (High Upper Elevation & Dispersion)
+        { "id": "skull", "name": "Kalla suyagi (Kranium)", "latin": "Cranium", "system": "skeletal", "region": "head", "category": "skeletal", "dx": 0, "dy": -360, "dz": -240, "image": "part_skull.png", "w": 160, "h": 170, "x": 320, "y": 40, "cx": 400, "cy": 125 },
+        { "id": "brain", "name": "Bosh miya", "latin": "Encephalon & Cerebrum", "system": "nervous", "region": "head", "category": "organs", "dx": 0, "dy": -390, "dz": 340, "image": "part_brain.png", "w": 160, "h": 150, "x": 320, "y": 50, "cx": 400, "cy": 125 },
+        { "id": "eye", "name": "Ko'z olmasi & ko'rish nervi", "latin": "Bulbus oculi & n. opticus", "system": "nervous", "region": "head", "category": "organs", "dx": -190, "dy": -280, "dz": 300, "image": "part_eye.png", "w": 120, "h": 60, "x": 340, "y": 90, "cx": 400, "cy": 120 },
+        { "id": "head_muscles", "name": "Bosh & yuz muskullari", "latin": "Musculi capitis et faciei", "system": "muscular", "region": "head", "category": "muscular", "dx": 220, "dy": -280, "dz": 200, "image": "part_head_muscles.png", "w": 160, "h": 190, "x": 320, "y": 40, "cx": 400, "cy": 135 },
 
-        // Neck & Respiratory & Heart
-        { "id": "trachea", "name": "Hiqildoq & traxeya (Nafas yo'li)", "latin": "Larynx, Trachea et Gl. thyroidea", "system": "respiratory", "region": "neck", "category": "organs", "dx": 0, "dy": -90, "dz": 150, "image": "part_trachea.png", "w": 100, "h": 140, "x": 350, "y": 180, "cx": 400, "cy": 250 },
-        { "id": "heart", "name": "Yurak va klapanlar", "latin": "Cor", "system": "cardiovascular", "region": "chest", "category": "organs", "dx": -70, "dy": -30, "dz": 240, "image": "part_heart.png", "w": 80, "h": 100, "x": 365, "y": 330, "cx": 405, "cy": 380 },
-        { "id": "aorta", "name": "Aorta ravog'i & magistral tomirlar", "latin": "Arcus aortae et v. cava", "system": "cardiovascular", "region": "chest", "category": "organs", "dx": 60, "dy": -20, "dz": 200, "image": "part_aorta.png", "w": 130, "h": 260, "x": 340, "y": 250, "cx": 400, "cy": 380 },
-        { "id": "lungs", "name": "O'pka (O'ng va chap)", "latin": "Pulmones", "system": "respiratory", "region": "chest", "category": "organs", "dx": 0, "dy": -50, "dz": 190, "image": "part_lungs.png", "w": 240, "h": 170, "x": 280, "y": 270, "cx": 400, "cy": 355 },
+        // Neck & Respiratory & Heart (Thoracic Separation)
+        { "id": "trachea", "name": "Hiqildoq & traxeya (Nafas yo'li)", "latin": "Larynx, Trachea et Gl. thyroidea", "system": "respiratory", "region": "neck", "category": "organs", "dx": -160, "dy": -140, "dz": 260, "image": "part_trachea.png", "w": 100, "h": 140, "x": 350, "y": 180, "cx": 400, "cy": 250 },
+        { "id": "ribcage", "name": "Ko'krak qafasi & qovurg'alar", "latin": "Thorax et Costae", "system": "skeletal", "region": "chest", "category": "skeletal", "dx": 0, "dy": -80, "dz": -300, "image": "part_ribcage.png", "w": 260, "h": 240, "x": 270, "y": 240, "cx": 400, "cy": 360 },
+        { "id": "pectoralis_major", "name": "Katta ko'krak mushagi", "latin": "Musculus pectoralis major", "system": "muscular", "region": "chest", "category": "muscular", "dx": 0, "dy": -150, "dz": 320, "image": "part_pectoralis_major.png", "w": 280, "h": 140, "x": 260, "y": 270, "cx": 400, "cy": 340 },
+        { "id": "lungs", "name": "O'pka (O'ng va chap)", "latin": "Pulmones", "system": "respiratory", "region": "chest", "category": "organs", "dx": -310, "dy": -70, "dz": 240, "image": "part_lungs.png", "w": 240, "h": 170, "x": 280, "y": 270, "cx": 400, "cy": 355 },
+        { "id": "heart", "name": "Yurak va klapanlar", "latin": "Cor", "system": "cardiovascular", "region": "chest", "category": "organs", "dx": -130, "dy": -20, "dz": 440, "image": "part_heart.png", "w": 80, "h": 100, "x": 365, "y": 330, "cx": 405, "cy": 380 },
+        { "id": "aorta", "name": "Aorta ravog'i & magistral tomirlar", "latin": "Arcus aortae et v. cava", "system": "cardiovascular", "region": "chest", "category": "organs", "dx": 170, "dy": -40, "dz": 350, "image": "part_aorta.png", "w": 130, "h": 260, "x": 340, "y": 250, "cx": 400, "cy": 380 },
 
-        // Digestive Viscera (Ichi-chavoqlar)
-        { "id": "liver", "name": "Jigar va o't yo'llari", "latin": "Hepar et ductus biliares", "system": "digestive", "region": "abdomen", "category": "organs", "dx": -130, "dy": 50, "dz": 210, "image": "part_liver.png", "w": 130, "h": 100, "x": 305, "y": 410, "cx": 370, "cy": 460 },
-        { "id": "stomach", "name": "Oshqozon (Me'da)", "latin": "Gaster (Ventriculus)", "system": "digestive", "region": "abdomen", "category": "organs", "dx": 130, "dy": 50, "dz": 210, "image": "part_stomach.png", "w": 100, "h": 100, "x": 390, "y": 410, "cx": 440, "cy": 460 },
-        { "id": "pancreas", "name": "Oshqozon osti bezi & o't qopi", "latin": "Pancreas et vesica biliaris", "system": "digestive", "region": "abdomen", "category": "organs", "dx": 80, "dy": 80, "dz": 180, "image": "part_pancreas.png", "w": 120, "h": 90, "x": 340, "y": 440, "cx": 400, "cy": 485 },
-        { "id": "spleen", "name": "Taloq (Qon deposi)", "latin": "Splen (Lien)", "system": "cardiovascular", "region": "abdomen", "category": "organs", "dx": 160, "dy": 70, "dz": 160, "image": "part_spleen.png", "w": 80, "h": 80, "x": 440, "y": 410, "cx": 480, "cy": 450 },
-        { "id": "kidney_left", "name": "Chap buyrak", "latin": "Ren sinister", "system": "urinary", "region": "abdomen", "category": "organs", "dx": 130, "dy": 110, "dz": 140, "image": "part_kidney_left.png", "w": 80, "h": 90, "x": 440, "y": 470, "cx": 480, "cy": 515 },
-        { "id": "kidney_right", "name": "O'ng buyrak", "latin": "Ren dexter", "system": "urinary", "region": "abdomen", "category": "organs", "dx": -130, "dy": 110, "dz": 140, "image": "part_kidney_right.png", "w": 80, "h": 90, "x": 290, "y": 480, "cx": 330, "cy": 525 },
-        { "id": "intestines", "name": "Ingichka va yo'g'on ichak (Ich-chavoq)", "latin": "Intestinum tenue et colon", "system": "digestive", "region": "abdomen", "category": "organs", "dx": 0, "dy": 150, "dz": 220, "image": "part_intestines.png", "w": 180, "h": 190, "x": 310, "y": 490, "cx": 400, "cy": 585 },
-        { "id": "bladder", "name": "Siydik pufagi (Qovuq)", "latin": "Vesica urinaria", "system": "urinary", "region": "pelvis", "category": "organs", "dx": 0, "dy": 180, "dz": 190, "image": "part_bladder.png", "w": 90, "h": 90, "x": 355, "y": 620, "cx": 400, "cy": 665 },
+        // Muscular Groups - Upper Limbs (Extensive Lateral Wing Spread)
+        { "id": "deltoid_left", "name": "Chap deltasimon mushak", "latin": "Musculus deltoideus sinister", "system": "muscular", "region": "chest", "category": "muscular", "dx": -360, "dy": -50, "dz": 160, "image": "part_deltoid_left.png", "w": 130, "h": 180, "x": 180, "y": 240, "cx": 245, "cy": 330 },
+        { "id": "deltoid_right", "name": "O'ng deltasimon mushak", "latin": "Musculus deltoideus dexter", "system": "muscular", "region": "chest", "category": "muscular", "dx": 360, "dy": -50, "dz": 160, "image": "part_deltoid_right.png", "w": 130, "h": 180, "x": 490, "y": 240, "cx": 555, "cy": 330 },
+        { "id": "arm_left", "name": "Chap qo'l (Biceps)", "latin": "Musculus biceps brachii sin.", "system": "muscular", "region": "arm", "category": "muscular", "dx": -500, "dy": 30, "dz": 120, "image": "part_arm_left.png", "w": 160, "h": 220, "x": 110, "y": 360, "cx": 190, "cy": 470 },
+        { "id": "arm_right", "name": "O'ng qo'l (Biceps)", "latin": "Musculus biceps brachii dex.", "system": "muscular", "region": "arm", "category": "muscular", "dx": 500, "dy": 30, "dz": 120, "image": "part_arm_right.png", "w": 160, "h": 220, "x": 530, "y": 360, "cx": 610, "cy": 470 },
+        { "id": "hand_left", "name": "Chap kaft & bilak", "latin": "Musculi manus et antebrachii sin.", "system": "muscular", "region": "arm", "category": "muscular", "dx": -630, "dy": 110, "dz": 90, "image": "part_hand_left.png", "w": 180, "h": 230, "x": 30, "y": 540, "cx": 120, "cy": 655 },
+        { "id": "hand_right", "name": "O'ng kaft & bilak", "latin": "Musculi manus et antebrachii dex.", "system": "muscular", "region": "arm", "category": "muscular", "dx": 630, "dy": 110, "dz": 90, "image": "part_hand_right.png", "w": 180, "h": 230, "x": 590, "y": 540, "cx": 680, "cy": 655 },
 
-        // Skeletal Axial & Appendicular
-        { "id": "ribcage", "name": "Ko'krak qafasi & qovurg'alar", "latin": "Thorax et Costae", "system": "skeletal", "region": "chest", "category": "skeletal", "dx": 0, "dy": -80, "dz": -130, "image": "part_ribcage.png", "w": 260, "h": 240, "x": 270, "y": 240, "cx": 400, "cy": 360 },
-        { "id": "spine", "name": "Umurtqa pog'onasi", "latin": "Columna vertebralis", "system": "skeletal", "region": "spine", "category": "skeletal", "dx": 0, "dy": 40, "dz": -160, "image": "part_spine.png", "w": 70, "h": 340, "x": 365, "y": 230, "cx": 400, "cy": 400 },
-        { "id": "pelvis", "name": "Tos suyagi & dumg'aza", "latin": "Pelvis & os sacrum", "system": "skeletal", "region": "pelvis", "category": "skeletal", "dx": 0, "dy": 110, "dz": -120, "image": "part_pelvis.png", "w": 260, "h": 170, "x": 270, "y": 550, "cx": 400, "cy": 635 },
+        // Digestive Viscera (Ichi-chavoqlar - Complete Radial Unfolding)
+        { "id": "spine", "name": "Umurtqa pog'onasi", "latin": "Columna vertebralis", "system": "skeletal", "region": "spine", "category": "skeletal", "dx": 0, "dy": 50, "dz": -380, "image": "part_spine.png", "w": 70, "h": 340, "x": 365, "y": 230, "cx": 400, "cy": 400 },
+        { "id": "rectus_abdominis", "name": "Qorin to'g'ri mushagi (Press)", "latin": "Musculus rectus abdominis", "system": "muscular", "region": "abdomen", "category": "muscular", "dx": 260, "dy": 60, "dz": 260, "image": "part_rectus_abdominis.png", "w": 180, "h": 260, "x": 310, "y": 380, "cx": 400, "cy": 510 },
+        { "id": "liver", "name": "Jigar va o't yo'llari", "latin": "Hepar et ductus biliares", "system": "digestive", "region": "abdomen", "category": "organs", "dx": -340, "dy": 80, "dz": 280, "image": "part_liver.png", "w": 130, "h": 100, "x": 305, "y": 410, "cx": 370, "cy": 460 },
+        { "id": "stomach", "name": "Oshqozon (Me'da)", "latin": "Gaster (Ventriculus)", "system": "digestive", "region": "abdomen", "category": "organs", "dx": 330, "dy": 80, "dz": 280, "image": "part_stomach.png", "w": 100, "h": 100, "x": 390, "y": 410, "cx": 440, "cy": 460 },
+        { "id": "spleen", "name": "Taloq (Qon deposi)", "latin": "Splen (Lien)", "system": "cardiovascular", "region": "abdomen", "category": "organs", "dx": 450, "dy": 120, "dz": 240, "image": "part_spleen.png", "w": 80, "h": 80, "x": 440, "y": 410, "cx": 480, "cy": 450 },
+        { "id": "pancreas", "name": "Oshqozon osti bezi & o't qopi", "latin": "Pancreas et vesica biliaris", "system": "digestive", "region": "abdomen", "category": "organs", "dx": 140, "dy": 190, "dz": 260, "image": "part_pancreas.png", "w": 120, "h": 90, "x": 340, "y": 440, "cx": 400, "cy": 485 },
+        { "id": "kidney_right", "name": "O'ng buyrak", "latin": "Ren dexter", "system": "urinary", "region": "abdomen", "category": "organs", "dx": -420, "dy": 190, "dz": 180, "image": "part_kidney_right.png", "w": 80, "h": 90, "x": 290, "y": 480, "cx": 330, "cy": 525 },
+        { "id": "kidney_left", "name": "Chap buyrak", "latin": "Ren sinister", "system": "urinary", "region": "abdomen", "category": "organs", "dx": 420, "dy": 190, "dz": 180, "image": "part_kidney_left.png", "w": 80, "h": 90, "x": 440, "y": 470, "cx": 480, "cy": 515 },
+        { "id": "intestines", "name": "Ingichka va yo'g'on ichak (Ich-chavoq)", "latin": "Intestinum tenue et colon", "system": "digestive", "region": "abdomen", "category": "organs", "dx": -160, "dy": 320, "dz": 350, "image": "part_intestines.png", "w": 180, "h": 190, "x": 310, "y": 490, "cx": 400, "cy": 585 },
+        { "id": "bladder", "name": "Siydik pufagi (Qovuq)", "latin": "Vesica urinaria", "system": "urinary", "region": "pelvis", "category": "organs", "dx": 160, "dy": 430, "dz": 280, "image": "part_bladder.png", "w": 90, "h": 90, "x": 355, "y": 620, "cx": 400, "cy": 665 },
 
-        // Muscular Groups
-        { "id": "pectoralis_major", "name": "Katta ko'krak mushagi", "latin": "Musculus pectoralis major", "system": "muscular", "region": "chest", "category": "muscular", "dx": 0, "dy": -40, "dz": 140, "image": "part_pectoralis_major.png", "w": 280, "h": 140, "x": 260, "y": 270, "cx": 400, "cy": 340 },
-        { "id": "deltoid_left", "name": "Chap deltasimon mushak", "latin": "Musculus deltoideus sinister", "system": "muscular", "region": "chest", "category": "muscular", "dx": -170, "dy": -30, "dz": 110, "image": "part_deltoid_left.png", "w": 130, "h": 180, "x": 180, "y": 240, "cx": 245, "cy": 330 },
-        { "id": "deltoid_right", "name": "O'ng deltasimon mushak", "latin": "Musculus deltoideus dexter", "system": "muscular", "region": "chest", "category": "muscular", "dx": 170, "dy": -30, "dz": 110, "image": "part_deltoid_right.png", "w": 130, "h": 180, "x": 490, "y": 240, "cx": 555, "cy": 330 },
-        { "id": "arm_left", "name": "Chap qo'l (Biceps)", "latin": "Musculus biceps brachii sin.", "system": "muscular", "region": "arm", "category": "muscular", "dx": -210, "dy": 20, "dz": 90, "image": "part_arm_left.png", "w": 160, "h": 220, "x": 110, "y": 360, "cx": 190, "cy": 470 },
-        { "id": "arm_right", "name": "O'ng qo'l (Biceps)", "latin": "Musculus biceps brachii dex.", "system": "muscular", "region": "arm", "category": "muscular", "dx": 210, "dy": 20, "dz": 90, "image": "part_arm_right.png", "w": 160, "h": 220, "x": 530, "y": 360, "cx": 610, "cy": 470 },
-        { "id": "hand_left", "name": "Chap kaft & bilak", "latin": "Musculi manus et antebrachii sin.", "system": "muscular", "region": "arm", "category": "muscular", "dx": -250, "dy": 80, "dz": 70, "image": "part_hand_left.png", "w": 180, "h": 230, "x": 30, "y": 540, "cx": 120, "cy": 655 },
-        { "id": "hand_right", "name": "O'ng kaft & bilak", "latin": "Musculi manus et antebrachii dex.", "system": "muscular", "region": "arm", "category": "muscular", "dx": 250, "dy": 80, "dz": 70, "image": "part_hand_right.png", "w": 180, "h": 230, "x": 590, "y": 540, "cx": 680, "cy": 655 },
-        { "id": "rectus_abdominis", "name": "Qorin to'g'ri mushagi (Press)", "latin": "Musculus rectus abdominis", "system": "muscular", "region": "abdomen", "category": "muscular", "dx": 0, "dy": 50, "dz": 150, "image": "part_rectus_abdominis.png", "w": 180, "h": 260, "x": 310, "y": 380, "cx": 400, "cy": 510 },
-        { "id": "quadriceps_left", "name": "Chap son (Kvadritseps)", "latin": "Musculus quadriceps femoris sin.", "system": "muscular", "region": "leg", "category": "muscular", "dx": -150, "dy": 130, "dz": 90, "image": "part_quadriceps_left.png", "w": 180, "h": 330, "x": 210, "y": 640, "cx": 300, "cy": 805 },
-        { "id": "quadriceps_right", "name": "O'ng son (Kvadritseps)", "latin": "Musculus quadriceps femoris dex.", "system": "muscular", "region": "leg", "category": "muscular", "dx": 150, "dy": 130, "dz": 90, "image": "part_quadriceps_right.png", "w": 180, "h": 330, "x": 410, "y": 640, "cx": 500, "cy": 805 },
-        { "id": "calves_left", "name": "Chap boldir (Ikra)", "latin": "Musculus gastrocnemius sin.", "system": "muscular", "region": "leg", "category": "muscular", "dx": -160, "dy": 210, "dz": 70, "image": "part_calves_left.png", "w": 160, "h": 380, "x": 230, "y": 960, "cx": 310, "cy": 1150 },
-        { "id": "calves_right", "name": "O'ng boldir (Ikra)", "latin": "Musculus gastrocnemius dex.", "system": "muscular", "region": "leg", "category": "muscular", "dx": 160, "dy": 210, "dz": 70, "image": "part_calves_right.png", "w": 160, "h": 380, "x": 410, "y": 960, "cx": 490, "cy": 1150 }
+        // Pelvis & Lower Limbs (Wide Deep Clearance)
+        { "id": "pelvis", "name": "Tos suyagi & dumg'aza", "latin": "Pelvis & os sacrum", "system": "skeletal", "region": "pelvis", "category": "skeletal", "dx": 0, "dy": 260, "dz": -260, "image": "part_pelvis.png", "w": 260, "h": 170, "x": 270, "y": 550, "cx": 400, "cy": 635 },
+        { "id": "quadriceps_left", "name": "Chap son (Kvadritseps)", "latin": "Musculus quadriceps femoris sin.", "system": "muscular", "region": "leg", "category": "muscular", "dx": -380, "dy": 340, "dz": 140, "image": "part_quadriceps_left.png", "w": 180, "h": 330, "x": 210, "y": 640, "cx": 300, "cy": 805 },
+        { "id": "quadriceps_right", "name": "O'ng son (Kvadritseps)", "latin": "Musculus quadriceps femoris dex.", "system": "muscular", "region": "leg", "category": "muscular", "dx": 380, "dy": 340, "dz": 140, "image": "part_quadriceps_right.png", "w": 180, "h": 330, "x": 410, "y": 640, "cx": 500, "cy": 805 },
+        { "id": "calves_left", "name": "Chap boldir (Ikra)", "latin": "Musculus gastrocnemius sin.", "system": "muscular", "region": "leg", "category": "muscular", "dx": -450, "dy": 520, "dz": 100, "image": "part_calves_left.png", "w": 160, "h": 380, "x": 230, "y": 960, "cx": 310, "cy": 1150 },
+        { "id": "calves_right", "name": "O'ng boldir (Ikra)", "latin": "Musculus gastrocnemius dex.", "system": "muscular", "region": "leg", "category": "muscular", "dx": 450, "dy": 520, "dz": 100, "image": "part_calves_right.png", "w": 160, "h": 380, "x": 410, "y": 960, "cx": 490, "cy": 1150 }
     ];
 
     // State Variables
     let explodeProgress = 0; // 0 to 100
     let targetExplode = 0;
-    let dispersionMultiplier = 1.0;
+    let dispersionMultiplier = 1.2;
     let isPlaying = false;
     let playDirection = 1;
     let mouseTrackMode = false;
     let activeSystem = 'all';
     let activeRegion = 'all';
     let selectedItemId = null;
-    let zoomLevel = 1.0;
+    let zoomLevel = typeof window !== 'undefined' && window.innerWidth < 1500 ? 0.88 : 0.95;
     let camRotateX = 0;
     let camRotateY = 0;
     let xrayActive = false;
@@ -284,6 +284,10 @@
             labelEl.dataset.system = part.system;
             labelEl.dataset.region = part.region;
 
+            // Anchor base origin directly at organ visual center
+            labelEl.style.left = `${(part.cx / baseW) * 100}%`;
+            labelEl.style.top = `${((part.cy + (part.h / 2) + 12) / baseH) * 100}%`;
+
             labelEl.innerHTML = `
                 <div class="hologram-badge">
                     <span class="badge-title">${part.name}</span>
@@ -347,8 +351,8 @@
 
         if (p > 72) {
             const shiftProgress = Math.min(1, (p - 72) / 28);
-            bodyShiftX = shiftProgress * 240; // shift 240px right
-            bodyScale = 1.0 - (shiftProgress * 0.16); // scale to 84%
+            bodyShiftX = shiftProgress * 290; // shift 290px right
+            bodyScale = 1.0 - (shiftProgress * 0.20); // scale to 80% for spacious fit
             galleryAlpha = shiftProgress;
             if (explodedOrgansGallery) {
                 explodedOrgansGallery.classList.add('active');
@@ -379,11 +383,11 @@
             muscleBaseOpacity = Math.max(0.1, 1 - (p - 25) / 35);
         }
 
-        const skinShiftX = skinOpen * 180 * dispersionMultiplier;
-        const skinRotY = skinOpen * 35;
+        const skinShiftX = skinOpen * 340 * dispersionMultiplier;
+        const skinRotY = skinOpen * 45;
 
-        skinLeft.style.transform = `translateX(-${skinShiftX}px) rotateY(-${skinRotY}deg) translateZ(${skinOpen * 30}px)`;
-        skinRight.style.transform = `translateX(${skinShiftX}px) rotateY(${skinRotY}deg) translateZ(${skinOpen * 30}px)`;
+        skinLeft.style.transform = `translateX(-${skinShiftX}px) rotateY(-${skinRotY}deg) translateZ(${skinOpen * 40}px)`;
+        skinRight.style.transform = `translateX(${skinShiftX}px) rotateY(${skinRotY}deg) translateZ(${skinOpen * 40}px)`;
         layerSkin.style.opacity = skinOpacity;
 
         // Base Muscle Layer
@@ -485,25 +489,23 @@
                 const showLabel = p > 28 && p < 72 && partOpacity > 0.6 && isVisible;
 
                 if (showLabel) {
-                    const originX = part.cx;
-                    const originY = part.cy;
-                    const explodedX = originX + curDx;
-                    const explodedY = originY + curDy;
-
-                    const labelPosX = (explodedX / baseW) * 100;
-                    const labelPosY = ((explodedY + (part.h / 2) + 20) / baseH) * 100;
-
-                    labelEl.style.left = `${labelPosX}%`;
-                    labelEl.style.top = `${labelPosY}%`;
+                    labelEl.style.transform = `translate3d(${curDx}px, ${curDy}px, ${curDz + 25}px) translate(-50%, -50%)`;
                     labelEl.style.display = 'block';
                     labelEl.style.opacity = '1';
 
                     // Laser connecting cable line
                     if (Math.abs(curDx) > 8 || Math.abs(curDy) > 8) {
+                        const svgScaleX = baseW / 520;
+                        const svgScaleY = baseH / 900;
+                        const originX = part.cx;
+                        const originY = part.cy;
+                        const explodedSvgX = originX + (curDx * svgScaleX);
+                        const explodedSvgY = originY + (curDy * svgScaleY);
+
                         svgLinesHtml += `
-                            <line x1="${originX}" y1="${originY}" x2="${explodedX}" y2="${explodedY}" class="cable-line" />
+                            <line x1="${originX}" y1="${originY}" x2="${explodedSvgX}" y2="${explodedSvgY}" class="cable-line" />
                             <circle cx="${originX}" cy="${originY}" r="3.5" class="cable-point" />
-                            <circle cx="${explodedX}" cy="${explodedY}" r="3.5" class="cable-point" />
+                            <circle cx="${explodedSvgX}" cy="${explodedSvgY}" r="3.5" class="cable-point" />
                         `;
                     }
                 } else {
