@@ -265,7 +265,28 @@
                     </button>
                 </div>
 
-                <!-- 3D Transform Anatomy Rig -->
+                <!-- Left-Side Exploded Organs Catalog (Appears in Stage 4 & 5 when body shifts right) -->
+                <div class="exploded-organs-gallery" id="explodedOrgansGallery">
+                    <div class="gallery-header">
+                        <div class="gallery-title-box">
+                            <span class="gallery-badge">TO'LIQ DISSEKSIYA</span>
+                            <h3>Tanadan Ajratilgan Barcha A'zolar</h3>
+                            <p>Organlar ketma-ketlikda ajratilib, tizimlar bo'yicha saralandi</p>
+                        </div>
+                        <div class="gallery-filter-chips" id="galleryFilterChips">
+                            <button class="chip active" data-filter="all">Barchasi</button>
+                            <button class="chip" data-filter="organs">A'zolar (Ich-chavoq)</button>
+                            <button class="chip" data-filter="skeletal">Suyaklar</button>
+                            <button class="chip" data-filter="muscular">Mushaklar</button>
+                        </div>
+                    </div>
+
+                    <div class="gallery-cards-grid" id="galleryCardsGrid">
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </div>
+
+                <!-- 3D Transform Anatomy Rig (Human Body) -->
                 <div class="stage-3d-rig" id="stageRig">
                     <!-- Layer 5: Circulatory & Nervous tree -->
                     <div class="layer-slice" id="layerCirculatory">
